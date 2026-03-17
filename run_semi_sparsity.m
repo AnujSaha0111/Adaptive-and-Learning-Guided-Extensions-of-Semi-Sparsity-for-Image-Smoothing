@@ -3,8 +3,14 @@ clear;
 close all;
 
 % loading images input
-I0 = im2double(imread('strip_gt.png'));      % Ground truth
-I  = im2double(imread('strip_noise.png'));   % Noisy input
+% I0 = im2double(imread('strip_gt.png'));      % Ground truth
+% I  = im2double(imread('strip_noise.png'));   % Noisy input
+I = im2double(imread('Barbara_noisy.png'));
+I0  = im2double(imread('Barbara.jpg'));
+% I = im2double(imread('Cameraman_noisy.png'));
+% I0  = im2double(imread('Cameraman.jpg'));
+% I = im2double(imread('lena_noisy.png'));
+% I0  = im2double(imread('lena.jpg'));
 
 [N,M,D] = size(I);
 sizeI2D = [N M];
