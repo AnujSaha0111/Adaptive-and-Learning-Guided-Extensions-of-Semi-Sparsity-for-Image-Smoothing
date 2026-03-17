@@ -2,9 +2,15 @@ clc;
 clear;
 close all;
 
-% load images
-I0 = im2double(imread('strip_gt.png'));
-I  = im2double(imread('strip_noise.png'));
+% Load images
+% I0 = im2double(imread('strip_gt.png'));
+% I  = im2double(imread('strip_noise.png'));
+I = im2double(imread('Barbara_noisy.png'));
+I0  = im2double(imread('Barbara.jpg'));
+% I = im2double(imread('Cameraman_noisy.png'));
+% I0  = im2double(imread('Cameraman.jpg'));
+% I = im2double(imread('lena_noisy.png'));
+% I0  = im2double(imread('lena.jpg'));
 
 [N,M,D] = size(I);
 sizeI2D = [N M];
@@ -34,7 +40,7 @@ if D > 1
     Denormin2 = repmat(Denormin2,[1 1 D]);
 end
 
-% parameters (as per the paper)
+% parameters
 alpha = 0.1;
 beta  = 0.02;
 lambda = 10 * beta;
@@ -48,12 +54,12 @@ Normin0 = fft2(S);
 errs = zeros(iter_max,1);
 iter = 1;
 
-% HQS optimization loop with adaptive thresholding
+% HQS Optimization Loop
 while lambda <= lambda_max && iter <= iter_max
 
     Denormin = 1 + alpha*Denormin1 + lambda*Denormin2;
 
-    % 1st order gradients
+    % First-order gradients
     gx = imfilter(S, Dx, 'circular');
     gy = imfilter(S, Dy, 'circular');
 
@@ -69,13 +75,13 @@ while lambda <= lambda_max && iter <= iter_max
     w = exp(-gamma * grad_mag);  % 2D weight map
     beta_map = beta * (w.^eta);               % 2D adaptive beta
 
-    % 2nd order gradients (SEMI-SPARSITY)
+    % Second-order gradients
     gxx = imfilter(S, fxx, 'circular');
     gyy = imfilter(S, fyy, 'circular');
     guu = imfilter(S, fuu, 'circular');
     gvv = imfilter(S, fvv, 'circular');
 
-    % adaptive thresholding(extension)
+    % Adaptive L0 thresholding
     if D == 1
         mask = (gxx.^2 + gyy.^2 + guu.^2 + gvv.^2) < beta_map/lambda;
     else
@@ -89,7 +95,7 @@ while lambda <= lambda_max && iter <= iter_max
     guu(mask)=0;
     gvv(mask)=0;
 
-    % divergence of 1st and 2nd order gradients
+    % Divergence
     Normin1 = circshift(imfilter(gx, Dx(end:-1:1),'circular'),[0 1]) + ...
               circshift(imfilter(gy, Dy(end:-1:1),'circular'),[1 0]);
 
@@ -98,7 +104,6 @@ while lambda <= lambda_max && iter <= iter_max
               imfilter(guu,fuu(end:-1:1,end:-1:1),'circular') + ...
               imfilter(gvv,fvv(end:-1:1,end:-1:1),'circular');
 
-    % fft-based solution
     FS = (Normin0 + alpha*fft2(Normin1) + lambda*fft2(Normin2)) ./ Denormin;
     S  = real(ifft2(FS));
 
@@ -111,7 +116,7 @@ end
 
 errs = errs(1:iter-1);
 
-% evaluation
+% psnr
 psnr_val = psnr( ...
     I0(13:end-12,13:end-12,:), ...
     min(1,max(0,S(13:end-12,13:end-12,:))) ...
