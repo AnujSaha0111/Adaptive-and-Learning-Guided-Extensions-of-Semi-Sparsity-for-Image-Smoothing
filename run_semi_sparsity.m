@@ -10,7 +10,7 @@ I0  = im2double(imread('Barbara.jpg'));
 % I = im2double(imread('Cameraman_noisy.png'));
 % I0  = im2double(imread('Cameraman.jpg'));
 % I = im2double(imread('lena_noisy.png'));
-% I0  = im2double(imread('lena.jpg'));
+% I0  = im2double(imread('lena.png'));
 
 [N,M,D] = size(I);
 sizeI2D = [N M];
@@ -101,9 +101,18 @@ psnr_val = psnr( ...
 fprintf('PSNR = %.4f dB\n', psnr_val);
 
 % saving output images
-imwrite(I0,'output/strip_semi_sparsity_gt.png');
-imwrite(I ,'output/strip_semi_sparsity_noise.png');
-imwrite(S ,'output/strip_semi_sparsity_res.png');
+% imwrite(I0,'output/strip_semi_sparsity_gt.png');
+% imwrite(I ,'output/strip_semi_sparsity_noise.png');
+% imwrite(S ,'output/strip_semi_sparsity_res.png');
+% imwrite(I0,'output/lena_semi_sparsity_gt.png');
+% imwrite(I ,'output/lena_semi_sparsity_noise.png');
+% imwrite(S ,'output/lena_semi_sparsity_res.png');
+% imwrite(I0,'output/cameraman_semi_sparsity_gt.png');
+% imwrite(I ,'output/cameraman_semi_sparsity_noise.png');
+% imwrite(S ,'output/cameraman_semi_sparsity_res.png');
+imwrite(S,'output/barbara_semi_sparsity_res.png');
+imwrite(I,'output/barbara_semi_sparsity_noise.png');
+imwrite(I0,'output/barbara_semi_sparsity_gt.png');
 
 % display and show convergence plot
 figure;

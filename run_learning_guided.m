@@ -5,14 +5,14 @@ close all;
 % Load images.
 % I0 = im2double(imread('strip_gt.png'));      % Ground truth
 % I  = im2double(imread('strip_noise.png'));   % Noisy input
-I0 = im2double(imread('lena.jpg'));
-I  = im2double(imread('lena_noisy.png'));
+% I0 = im2double(imread('lena.png'));
+% I  = im2double(imread('lena_noisy.png'));
 % I0 = im2double(imread('Cameraman.jpg'));
 % I  = im2double(imread('Cameraman_noisy.png'));
-% I0 = im2double(imread('Barbara.jpg'));
-% I  = im2double(imread('Barbara_noisy.png'));
-edge_map = im2double(imread('edges/edge_map_Lena.png'));
-% edge_map = im2double(imread('edges/edge_map_Barbara.png'));
+I0 = im2double(imread('Barbara.jpg'));
+I  = im2double(imread('Barbara_noisy.png'));
+% edge_map = im2double(imread('edges/edge_map_Lena.png'));
+edge_map = im2double(imread('edges/edge_map_Barbara.png'));
 % edge_map = im2double(imread('edges/edge_map_Cameraman.png'));
 % edge_map = im2double(imread('edges/edge_map_strip_noise.png'));
 

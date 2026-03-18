@@ -10,7 +10,7 @@ I0  = im2double(imread('Barbara.jpg'));
 % I = im2double(imread('Cameraman_noisy.png'));
 % I0  = im2double(imread('Cameraman.jpg'));
 % I = im2double(imread('lena_noisy.png'));
-% I0  = im2double(imread('lena.jpg'));
+% I0  = im2double(imread('lena.png'));
 
 [N,M,D] = size(I);
 sizeI2D = [N M];
@@ -124,7 +124,10 @@ psnr_val = psnr( ...
 
 fprintf('Adaptive PSNR = %.4f dB\n', psnr_val);
 
-imwrite(S,'output/strip_semi_sparsity_adaptive_res.png');
+% imwrite(S,'output/strip_semi_sparsity_adaptive_res.png');
+% imwrite(S,'output/lena_semi_sparsity_adaptive_res.png');
+% imwrite(S,'output/cameraman_semi_sparsity_adaptive_res.png');
+imwrite(S,'output/barbara_semi_sparsity_adaptive_res.png');
 
 figure;
 imshow([I S]);
