@@ -2,7 +2,7 @@
 
 ## Overview
 
-This repository extends the base semi-sparsity framework for edge-preserving image smoothing with three targeted extensions: **adaptive spatially varying thresholds**, **learning-guided semi-sparsity (LGSS)** using edge priors, and **multi-scale decomposition** analysis.
+This repository extends the semi-sparsity framework [Xin et al., 2021] for edge-preserving image smoothing with three targeted extensions: **adaptive spatially varying thresholds**, **learning-guided semi-sparsity (LGSS)** using edge priors, and **multi-scale decomposition** analysis.
 
 ### Background: Edge-Preserving Image Smoothing
 
@@ -24,7 +24,7 @@ Introduces spatially varying threshold β(x,y) modulated by local first-order gr
 Incorporates external edge priors from Canny edge detection. Achieves competitive performance on natural images but does not surpass the adaptive method, indicating that externally derived edge priors provide limited complementary information beyond gradient-based internal weighting. Degrades on synthetic images (Strip: -2.24 dB).
 
 **Multi-scale (Negative Result)**  
-Explores coarse-to-fine strategy but demonstrates fundamental incompatibility with FFT-based global optimization. Results in severe performance degradation (35–40 dB vs 47 dB on Strip), highlighting fundamental incompatibility with FFT-based global optimization, providing valuable insight that not all extensions are compatible with the underlying optimization framework.
+Explores coarse-to-fine strategy but results in significant performance degradation (35–40 dB vs 47 dB on Strip), indicating incompatibility with the FFT-based global optimization framework.
 
 ---
 
@@ -134,7 +134,7 @@ LGSS incorporates external edge probability maps E(x,y):
 
 ### Key Observations
 
-The adaptive method emerges as the dominant improvement, achieving highest PSNR in three of four test cases with a substantial +4.45 dB gain on Lena. LGSS provides competitive results on natural images but cannot surpass adaptive performance, indicating that externally derived edge priors offer limited additional information beyond the gradient-based internal weighting. The multi-scale approach fails catastrophically, underscoring its fundamental incompatibility with FFT-based global optimization. The Barbara image exposes a critical limitation: second-order sparsity cannot reliably distinguish between structured texture and noise, resulting in performance degradation across all methods.
+The adaptive method emerges as the dominant improvement, achieving highest PSNR in 3 out of 4 test cases with a substantial +4.45 dB gain on Lena. LGSS provides competitive results on natural images but cannot surpass adaptive performance, indicating that externally derived edge priors offer limited additional information beyond the gradient-based internal weighting. The multi-scale approach results in significant performance degradation, indicating incompatibility with the FFT-based global optimization framework.
 
 ---
 
@@ -154,7 +154,7 @@ This negative result demonstrates that **not all algorithmic extensions are comp
 
 ### Texture Limitation
 
-All methods struggle with texture-rich images (e.g., Barbara). Second-order sparsity cannot distinguish between semantic texture patterns and noise—both have high curvature. Future work requires texture-aware models or higher-level priors. Notably, the adaptive method also exhibits limitations in texture-rich regions, where second-order sparsity fails to distinguish structured texture from noise, leading to slight performance degradation.
+All methods struggle on texture-rich images (e.g., Barbara), as second-order sparsity cannot reliably distinguish structured texture from noise. The adaptive method inherits this limitation, resulting in slight performance degradation in such regions.
 
 ---
 
@@ -190,7 +190,7 @@ Then run:
 run_learning_guided
 ```
 
-**4. Multi-Scale (not recommended - fails)**
+**4. Multi-scale (Negative Result)**
 ```matlab
 run_multi_scale_semi
 ```
