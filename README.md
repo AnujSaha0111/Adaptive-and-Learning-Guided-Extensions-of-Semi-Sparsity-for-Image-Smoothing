@@ -2,6 +2,9 @@
 
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/AnujSaha0111/Adaptive-and-Learning-Guided-Extensions-of-Semi-Sparsity-for-Image-Smoothing)
 
+### Phase 1: [Video Presentation](https://drive.google.com/file/d/1G2IZcxedo8XSER43beEuM4_e1vReAtKy/view) 
+### Phase 2: [Video Presentation](https://drive.google.com/file/d/1hAVeffUH7tp4Ym5EHIlqlnj316AmYpO_/view) 
+
 ## Overview
 
 This repository extends the semi-sparsity framework [Xin et al., 2021] for edge-preserving image smoothing with three targeted extensions: **adaptive spatially varying thresholds**, **learning-guided semi-sparsity (LGSS)** using edge priors, and **multi-scale decomposition** analysis.
