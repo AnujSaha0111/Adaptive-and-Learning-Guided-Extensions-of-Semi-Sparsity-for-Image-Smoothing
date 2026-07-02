@@ -11,6 +11,7 @@ I0  = im2double(imread('Barbara.jpg'));
 % I0  = im2double(imread('Cameraman.jpg'));
 % I = im2double(imread('lena_noisy.png'));
 % I0  = im2double(imread('lena.png'));
+img_name = 'barbara';
 
 [N,M,D] = size(I);
 sizeI2D = [N M];
@@ -93,11 +94,7 @@ end
 
 errs = errs(1:iter-1);
 
-% psnr val cal
-psnr_val = psnr( ...
-    I0(13:end-12,13:end-12,:), ...
-    min(1,max(0,S(13:end-12,13:end-12,:))) ...
-);
+psnr_val = compute_psnr(I0, S);
 fprintf('PSNR = %.4f dB\n', psnr_val);
 
 % saving output images
@@ -124,4 +121,4 @@ xlabel('Iteration');
 ylabel('MSE');
 title('Convergence Curve');
 grid on;
-saveas(gcf,'output/strip_semi_sparsity_err_plot.png');
+saveas(gcf,['output/' img_name '_semi_sparsity_err_plot.png']);

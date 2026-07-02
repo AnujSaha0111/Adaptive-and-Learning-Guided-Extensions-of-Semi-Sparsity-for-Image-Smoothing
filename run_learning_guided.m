@@ -38,7 +38,7 @@ W = min(max(W, 0), 1);
 S = semi_sparsity_lgss(I, W);
 S = min(max(S, 0), 1);
 
-psnr_val = psnr(I0, S);
+psnr_val = compute_psnr(I0, S);
 fprintf('LGSS PSNR = %.4f dB\n', psnr_val);
 
 figure;

@@ -13,10 +13,7 @@ I0  = im2double(imread('lena.jpg'));
 
 S_dual = semi_sparsity_core(I);
 
-psnr_val = psnr( ...
-    I0(13:end-12,13:end-12,:), ...
-    min(1,max(0,S_dual(13:end-12,13:end-12,:))) ...
-);
+psnr_val = compute_psnr(I0, S_dual);
 
 fprintf('Dual-Order PSNR = %.4f dB\n', psnr_val);
 

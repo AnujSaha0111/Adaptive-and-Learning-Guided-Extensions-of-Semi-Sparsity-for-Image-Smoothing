@@ -116,11 +116,7 @@ end
 
 errs = errs(1:iter-1);
 
-% psnr
-psnr_val = psnr( ...
-    I0(13:end-12,13:end-12,:), ...
-    min(1,max(0,S(13:end-12,13:end-12,:))) ...
-);
+psnr_val = compute_psnr(I0, S);
 
 fprintf('Adaptive PSNR = %.4f dB\n', psnr_val);
 

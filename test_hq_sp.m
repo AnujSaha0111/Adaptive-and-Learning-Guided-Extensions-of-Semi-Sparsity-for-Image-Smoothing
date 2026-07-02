@@ -88,7 +88,7 @@ end
 fprintf('\n');
 
 %%
-psnr_sp = psnr(I0(13:end-12,13:end-13,:),min(1,max(0,S(13:end-12,13:end-13,:))))
+psnr_sp = compute_psnr(I0, S)
 figure,imshow([I S]),title(['semi-sparsity smoothing results (psnr: ', num2str(psnr_sp) ')'])
 %% figure,plot(errs)
 h = figure;
