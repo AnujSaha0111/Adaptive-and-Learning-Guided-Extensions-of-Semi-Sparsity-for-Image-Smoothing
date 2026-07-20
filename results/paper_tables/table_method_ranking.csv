@@ -1,0 +1,17 @@
+Dataset,Sigma,Rank1,Rank2,Rank3,Rank4,Rank5,Rank6,Rank7
+BSD68,10,bilateral,guided,lgss,adaptive,l0,original,tv
+BSD68,20,bilateral,guided,lgss,adaptive,l0,original,tv
+BSD68,25,bilateral,guided,lgss,adaptive,l0,original,tv
+BSD68,50,original,l0,guided,bilateral,lgss,adaptive,tv
+Kodak24,10,bilateral,guided,lgss,adaptive,l0,original,tv
+Kodak24,20,bilateral,guided,lgss,adaptive,l0,original,tv
+Kodak24,25,lgss,guided,bilateral,adaptive,l0,original,tv
+Kodak24,50,original,l0,guided,bilateral,lgss,adaptive,tv
+Set12,10,bilateral,guided,lgss,adaptive,l0,original,tv
+Set12,20,bilateral,guided,lgss,adaptive,l0,original,tv
+Set12,25,lgss,bilateral,guided,adaptive,l0,original,tv
+Set12,50,original,l0,guided,bilateral,lgss,adaptive,tv
+custom,10,bilateral,guided,lgss,adaptive,l0,original,tv
+custom,20,bilateral,guided,lgss,adaptive,l0,original,tv
+custom,25,lgss,bilateral,guided,adaptive,l0,original,tv
+custom,50,original,l0,guided,bilateral,lgss,adaptive,tv

@@ -1,272 +1,163 @@
 # Adaptive and Learning-Guided Extensions of Semi-Sparsity for Image Smoothing
 
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/AnujSaha0111/Adaptive-and-Learning-Guided-Extensions-of-Semi-Sparsity-for-Image-Smoothing)
+Extensions of the semi-sparsity framework for edge-preserving image smoothing
+with spatially adaptive thresholds and learning-guided priors.
 
-### Phase 1: [Video Presentation](https://drive.google.com/file/d/1G2IZcxedo8XSER43beEuM4_e1vReAtKy/view) 
-### Phase 2: [Video Presentation](https://drive.google.com/file/d/1hAVeffUH7tp4Ym5EHIlqlnj316AmYpO_/view) 
+## Key Contributions
 
-## Overview
-
-This repository extends the semi-sparsity framework [Xin et al., 2021] for edge-preserving image smoothing with three targeted extensions: **adaptive spatially varying thresholds**, **learning-guided semi-sparsity (LGSS)** using edge priors, and **multi-scale decomposition** analysis.
-
-### Background: Edge-Preserving Image Smoothing
-
-Edge-preserving smoothing is a fundamental image processing task that reduces noise and small variations while maintaining salient structural edges. The semi-sparsity approach extends classical L₀ gradient minimization by enforcing sparsity on **second-order gradients** (curvature), enabling piecewise-linear approximations that smooth flat regions and linear gradients while preserving transitions.
-
-### Key Limitation
-
-The original semi-sparsity formulation uses a **global threshold β** applied uniformly across the entire image. This uniform thresholding cannot adapt to local image content, leading to:
-- Over-smoothing in textured regions
-- Under-smoothing in homogeneous areas
-- Parameter sensitivity across different image types
-
-### 🚀 Main Contribution: Adaptive Semi-Sparsity
-
-**Adaptive Semi-Sparsity (Primary Contribution)**  
-Introduces spatially varying threshold β(x,y) modulated by local first-order gradient magnitude. This approach directly addresses the global threshold limitation, achieving **+4.45 dB improvement** on natural images (Lena) and the highest PSNR in 3 out of 4 test cases.
-
-**LGSS (Secondary Contribution)**  
-Incorporates external edge priors from Canny edge detection. Achieves competitive performance on natural images but does not surpass the adaptive method, indicating that externally derived edge priors provide limited complementary information beyond gradient-based internal weighting. Degrades on synthetic images (Strip: -2.24 dB).
-
-**Multi-scale (Negative Result)**  
-Explores coarse-to-fine strategy but results in significant performance degradation (35–40 dB vs 47 dB on Strip), indicating incompatibility with the FFT-based global optimization framework.
-
----
-
-### Why This Work Matters
-
-- **Spatial adaptivity outperforms external priors**: Demonstrates that locally modulating regularization strength is more effective than incorporating learned edge information for this optimization framework
-- **Negative results are informative**: The multi-scale failure provides concrete evidence that FFT-based global optimization cannot naturally extend to multi-resolution schemes
-- **Dual insights**: This work offers both a successful positive extension (adaptive) and a documented failure mode (multi-scale), guiding future research toward compatible algorithmic modifications
-
-Overall, this work demonstrates that improving local regularization adaptivity is more effective than introducing additional priors within the semi-sparsity framework.
-
----
-
-## Method Overview
-
-### Energy Functional
-
-The semi-sparsity energy combines three terms:
-
-$$E(S) = \underbrace{\|S - I\|^2}_{\text{Data fidelity}} + \underbrace{\alpha\|\nabla S\|^2}_{\text{First-order smoothness}} + \underbrace{\lambda\|\nabla^2 S\|_0}_{\text{Second-order sparsity}}$$
-
-Where:
-- $\|\nabla^2 S\|_0$ counts non-zero second-order gradients (curvature)
-- $\alpha$ controls baseline smoothness
-- $\lambda$ controls sparsity penalty
-
-### Optimization: Half-Quadratic Splitting (HQS)
-
-The non-convex L₀ term is handled via HQS, alternating between:
-1. **S-subproblem**: FFT-based quadratic minimization
-2. **g-subproblem**: Hard thresholding: $g = \nabla^2 S$ if $\|\nabla^2 S\|^2 \geq \beta/\lambda$
-
-### Adaptive Threshold Idea
-
-Instead of a uniform threshold β, we use spatially adaptive β(x,y):
-
-$$\beta(x,y) = \beta_0 \cdot w(x,y)^\eta$$
-
-where $w(x,y) = \exp(-\gamma \sqrt{\nabla_x S^2 + \nabla_y S^2})$
-
-- At edges (large gradient): β → 0, preserving edge sharpness
-- In smooth regions: β ≈ β₀, enforcing stronger smoothing
-
-### LGSS Weight Map
-
-LGSS incorporates external edge probability maps E(x,y):
-- Weight map: $W(x,y) = 1 - E(x,y)$
-- Threshold: $\text{threshold}(x,y) = \frac{\beta \cdot W(x,y)}{\lambda}$
-- Edge detection: Canny with Gaussian smoothing (σ=3)
-
----
+1.  **Adaptive Semi-Sparsity** — Spatially varying threshold beta(x, y)
+    modulated by local gradient magnitude. Achieves up to +4.45 dB PSNR
+    improvement over the original method.
+2.  **Learning-Guided Semi-Sparsity (LGSS)** — External edge priors from
+    Canny detection modulate the sparsity threshold via weight maps.
+3.  **Multi-scale Analysis** — Documented negative result: coarse-to-fine
+    decomposition fails due to incompatibility with FFT-based global
+    optimization.
 
 ## Repository Structure
 
 ```
-.
-├── run_semi_sparsity.m              # Base semi-sparsity implementation
-├── run_semi_sparsity_adaptive.m     # Adaptive threshold extension
-├── run_learning_guided.m            # LGSS implementation
-├── run_multi_scale_semi.m           # Multi-scale extension (fails)
-├── semi_sparsity_core.m             # Core HQS solver
-├── semi_sparsity_lgss.m             # LGSS core function
-├── run_l0_gradient.m                # L₀ gradient baseline
-├── run_abstraction.m                # Image abstraction application
-├── compare_l0_vs_semi.m             # Visual comparison script
-├── verify_semi_sparsity.m           # Statistical sparsity verification
-├── test_hq_sp.m                     # Demo-level implementation
-├── run_dual_order.m                 # Dual-order implementation
-├── generate_edge_map.py             # Edge map generation (OpenCV)
-│
-├── lena.png, lena_noisy.png         # Test images
-├── Cameraman.jpg, Cameraman_noisy.png
-├── Barbara.jpg, Barbara_noisy.png
-├── strip_gt.png, strip_noise.png
-│
-├── edges/                           # Pre-generated edge maps
-│   ├── edge_map_Lena.png
-│   ├── edge_map_Cameraman.png
-│   ├── edge_map_Barbara.png
-│   └── edge_map_strip_noise.png
-│
-├── output/                          # Result images and comparisons
-│   ├── *_semi_sparsity_res.png      # Base method results
-│   ├── *_semi_sparsity_adaptive_res.png  # Adaptive results
-│   ├── *_semi_sparsity_noise.png    # Noisy inputs
-│   ├── *_semi_sparsity_gt.png       # Ground truth
-│   └── ...
-│
-├── output(demo_implementation)/     # Demo outputs
-├── research_paper.tex               # Full research paper (LaTeX)
-├── Adaptive_and_Learning_Guided_Extensions_of_Semi_Sparsity_for_Image_Smoothing.pdf
-└── README.md                        # This file
+project/
+├── README.md                           # This file
+├── METHODOLOGY.md                      # Detailed methodology
+├── LICENSE                             # MIT License
+├── matlab/
+│   ├── core/                           # Core solvers
+│   │   ├── semi_sparsity_solver.m
+│   │   ├── lgss_solver.m
+│   │   └── setup_paths.m
+│   ├── methods/                        # Denoising wrappers (7 methods)
+│   ├── utils/                          # Utilities (noise, timing, stats)
+│   ├── evaluation/                     # PSNR, SSIM, verification
+│   ├── scripts/                        # Run scripts and analysis
+│   ├── config/                         # Parameter configuration
+│   └── datasets/                       # Dataset loading helpers
+├── datasets/                           # Set12, BSD68, Kodak24, custom
+│   └── download_instructions.md
+├── edges/                              # Pre-generated edge maps
+├── output/                             # Result visualizations *
+├── results/                            # Numerical results (CSV tables)
+│   ├── figures/                        # PSNR/SSIM/runtime plots
+│   ├── paper_tables/                   # Publication-ready tables
+│   └── statistics/                     # Statistical tests
+├── cvip_ipa_paper/                     # CVIP-IPA paper and materials *
+└── ieee_trans_paper/                   # IEEE Transactions paper draft *
 ```
 
----
+*Directories marked with * are frozen.*
 
-## Results
-
-### PSNR Comparison (dB)
-
-| Image     | Original | Adaptive | LGSS   | Best Improvement |
-|-----------|----------|----------|--------|-------------------|
-| Lena      | 24.87    | **29.32**| 28.88  | +4.45 dB          |
-| Cameraman | 26.05    | **27.62**| 27.44  | +1.58 dB          |
-| Barbara   | 26.30    | 26.15    | 26.17  | -0.14 dB          |
-| Strip     | 46.99    | **47.01**| 44.76  | +0.02 dB          |
-
-### Key Observations
-
-The adaptive method emerges as the dominant improvement, achieving highest PSNR in 3 out of 4 test cases with a substantial +4.45 dB gain on Lena. LGSS provides competitive results on natural images but cannot surpass adaptive performance, indicating that externally derived edge priors offer limited additional information beyond the gradient-based internal weighting. The multi-scale approach results in significant performance degradation, indicating incompatibility with the FFT-based global optimization framework.
-
----
-
-## Failure Analysis
-
-### Why Multi-Scale Fails
-
-The multi-scale extension fundamentally conflicts with the global FFT-based optimization:
-
-1. **Global optimization structure**: FFT-based solver uses periodic boundary conditions. Downsampling destroys the relationship between Fourier coefficients at different scales.
-
-2. **Initialization bias**: The HQS continuation strategy starts with nearly quadratic (small λ) and gradually increases sparsity. Initializing with a smoothed coarse estimate biases optimization toward intermediate sparsity.
-
-3. **Aliasing artifacts**: Downsampling without proper anti-aliasing introduces high-frequency artifacts during optimization.
-
-This negative result demonstrates that **not all algorithmic extensions are compatible with the underlying optimization framework**.
-
-### Texture Limitation
-
-All methods struggle on texture-rich images (e.g., Barbara), as second-order sparsity cannot reliably distinguish structured texture from noise. The adaptive method inherits this limitation, resulting in slight performance degradation in such regions.
-
----
-
-## Usage Instructions
+## Installation
 
 ### Requirements
-- **MATLAB** (tested on R2020+)
-- **Python 3** + **OpenCV** (for edge map generation in LGSS)
 
-### Running the Methods
+- **MATLAB** R2020+ with Image Processing Toolbox
+- **Python** 3.8+ with OpenCV (optional, for edge map generation)
 
-**1. Base Semi-Sparsity**
+### Setup
+
+Clone the repository and open MATLAB in the project root:
+
 ```matlab
-run_semi_sparsity
+setup_paths
 ```
-Generates: `output/*_semi_sparsity_res.png`
 
-**2. Adaptive Semi-Sparsity** (recommended)
+## Datasets
+
+Download test datasets following the instructions in
+`datasets/download_instructions.md`. The repository includes:
+
+| Dataset | Images | Type |
+|---------|--------|------|
+| Set12   | 12     | Grayscale |
+| BSD68   | 68     | Grayscale |
+| Kodak24 | 24     | Grayscale |
+| Custom  | 3      | Grayscale |
+
+## Running Experiments
+
+### Quick Demo
+
 ```matlab
-run_semi_sparsity_adaptive
-```
-Generates: `output/*_semi_sparsity_adaptive_res.png`
-
-**3. Learning-Guided Semi-Sparsity (LGSS)**
-
-First generate edge maps (if not exists):
-```bash
-python generate_edge_map.py
+run_original_semi_sparsity       % Base semi-sparsity
+run_adaptive_semi_sparsity       % Adaptive (recommended)
+run_lgss                          % Learning-guided
+run_l0_gradient_minimization      % L0 gradient baseline
 ```
 
-Then run:
+### Full Benchmark
+
 ```matlab
-run_learning_guided
+run_staged_benchmark(1)           % Stage 1: sanity check
+run_staged_benchmark(2)           % Stage 2: medium benchmark
+run_stages_3_and_4                % Stages 3 & 4: full benchmark
 ```
 
-**4. Multi-scale (Negative Result)**
+### Smoke Test
+
 ```matlab
-run_multi_scale_semi
+run_smoke_test
 ```
 
-**5. L₀ Gradient Baseline**
+## Generating Outputs
+
+### Figures
+
 ```matlab
-run_l0_gradient
+generate_result_plots
 ```
 
-**6. Image Abstraction Application**
+### Tables
+
 ```matlab
-run_abstraction
+generate_paper_tables
 ```
 
-### Parameters
+### Statistical Analysis
 
-Default parameters (defined in core functions):
-- α = 0.1 (first-order weight)
-- β = 0.02 (sparsity threshold)
-- λ₀ = 10β, λ_max = 10⁸
-- κ = 1.2, τ = 0.95 (continuation)
-- Adaptive: γ = 10, η = 2
-- LGSS: Canny thresholds (40, 120), Gaussian σ = 3
-
----
-
-## Visual Results
-
-### Lena Denoising Comparison
-
-| Noisy Input | Original Semi-Sparsity | Adaptive (Ours) |
-|-------------|------------------------|-----------------|
-| ![Noisy](output/lena_semi_sparsity_noise.png) | ![Original](output/lena_semi_sparsity_res.png) | ![Adaptive](output/lena_semi_sparsity_adaptive_res.png) |
-
-### Additional Results
-
-- **Cameraman**: [Noisy](output/cameraman_semi_sparsity_noise.png) | [Original](output/cameraman_semi_sparsity_res.png) | [Adaptive](output/cameraman_semi_sparsity_adaptive_res.png)
-- **Barbara**: [Noisy](output/barbara_semi_sparsity_noise.png) | [Original](output/barbara_semi_sparsity_res.png) | [Adaptive](output/barbara_semi_sparsity_adaptive_res.png)
-- **Strip**: [Noisy](output/strip_semi_sparsity_noise.png) | [Original](output/strip_semi_sparsity_res.png) | [Adaptive](output/strip_semi_sparsity_adaptive_res.png)
+```matlab
+perform_statistical_tests
+```
 
 ### Edge Maps (for LGSS)
 
-- [Lena Edge Map](edges/edge_map_Lena.png)
-- [Cameraman Edge Map](edges/edge_map_Cameraman.png)
-- [Barbara Edge Map](edges/edge_map_Barbara.png)
+```bash
+python matlab/scripts/generate_edge_map.py
+```
 
-The adaptive method visibly preserves fine structures (e.g., Lena's facial features, hat texture) while suppressing noise more effectively than the original semi-sparsity approach.
+## Reproducing the Paper
 
----
+1.  Run `run_staged_benchmark(1)` to verify the pipeline
+2.  Run `run_stages_3_and_4` for the full benchmark
+3.  Run `generate_paper_tables` to produce publication tables
+4.  Run `generate_result_plots` to produce figures
+5.  Run `perform_statistical_tests` for significance analysis
 
-## Future Work
+All results are written to `results/` as CSV files.
 
-Based on the analysis in our paper, promising directions include:
+## Output Description
 
-1. **Learned edge priors**: Replace Canny with learned detectors (HED, RCF) trained on noisy images
-2. **Joint optimization**: Iteratively estimate edges and smooth jointly
-3. **Texture-aware smoothing**: Add LBP or Gabor features to distinguish texture from noise
-4. **Deep learning integration**: CNNs to output spatially varying parameter maps
-5. **Alternative optimization**: Primal-dual or ADMM methods enabling multi-resolution extensions
-6. **Color image processing**: LAB/YUV spaces with inter-channel correlation
+| Directory | Contents |
+|-----------|----------|
+| `output/` | Denoised images, comparisons, convergence plots |
+| `results/results_table.csv` | Per-image, per-method PSNR, SSIM, runtime |
+| `results/summary_statistics.csv` | Aggregated results by method and dataset |
+| `results/paper_tables/` | Publication-ready LaTeX tables |
+| `results/figures/` | PSNR/SSIM vs noise level plots |
 
----
+## Parameters
 
-## References
+Default parameters are defined in `matlab/config/default_params.m`:
 
-- Q. Xin, Z. Liu, X. Wang, "Semi-Sparsity for Smoothing Filters," arXiv:2107.00627, 2021
-- L. Xu, C. Lu, Y. Xu, J. Jia, "Image smoothing via L₀ gradient minimization," ACM TOG, 2011
-- L. Rudin, S. Osher, E. Fatemi, "Nonlinear total variation based noise removal," Physica D, 1992
-
----
+| Parameter | Value | Description |
+|-----------|-------|-------------|
+| alpha     | 0.1   | First-order smoothness weight |
+| beta      | 0.02  | Second-order sparsity threshold |
+| lambda_0  | 0.2   | Initial sparsity penalty |
+| lambda_max| 1e8   | Maximum sparsity penalty |
+| kappa     | 1.2   | Continuation growth rate |
+| gamma     | 10    | Adaptive gradient modulation |
+| eta       | 2     | Adaptive weight exponent |
 
 ## License
 
-This project is released under the **MIT License**. See the 'LICENSE' file for details.
+MIT License. See `LICENSE` for details.
